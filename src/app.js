@@ -5,6 +5,7 @@ require("dotenv").config()
 const mongoose = require("mongoose")
 
 const { dbLogger, requestLogger, serverLogger } = require("./utils/logger")
+const userRoutes = require("./routes/userRoutes")
 
 const app = express()
 const server = createServer(app)
@@ -21,6 +22,9 @@ app.get('/', async (req, res) => {
     requestLogger.info('get request to /')
     res.status(200).json({ message: "server is up and running" })
 })
+
+
+app.use(`/api/${process.env.API_VERSION}/users`, userRoutes)
 
 app.use((err, req, res, next) => {
     serverLogger.error(err)
