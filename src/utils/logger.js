@@ -25,6 +25,19 @@ const dbLogger = createLogger({
   ],
 });
 
+// Logger for authentication logs
+const authLogger = createLogger({
+  level: "info",
+  format: combine(
+    label({ label: "Authentication" }),
+    timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+    prettyPrint()
+  ),
+  transports: [
+    new transports.Console(),
+  ],
+});
+
 const serverLogger = createLogger({
     level: "info",
     format: combine(
@@ -42,5 +55,6 @@ const serverLogger = createLogger({
 module.exports = {
   requestLogger,
   dbLogger,
-  serverLogger
+  serverLogger,
+  authLogger
 }
