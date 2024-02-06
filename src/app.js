@@ -3,6 +3,7 @@ const { createServer } = require("http")
 const cors = require("cors")
 require("dotenv").config()
 const mongoose = require("mongoose")
+const cookieParser = require('cookie-parser')
 
 const { dbLogger, requestLogger, serverLogger } = require("./utils/logger")
 const userRoutes = require("./routes/userRoutes")
@@ -12,6 +13,7 @@ const server = createServer(app)
 
 app.use(cors())
 app.use(express.json())
+app.use(cookieParser())
 
 //connect to mongoDB atlas
 mongoose.connect(process.env.MONGODB_URL)
