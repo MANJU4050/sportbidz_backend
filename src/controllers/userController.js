@@ -66,18 +66,28 @@ const loginUser = async (req, res) => {
             return res.status(401).json({ error: 'user not registered' })
         }
 
+        if (user.status !== 'active') {
+            authLogger.error(`login attempt by inactive user: ${req.body.mobile}`)
+            return res.status(401).json({ error: 'account inactive' })
+        }
+
         const isAuth = await bcrypt.compare(req.body.password, user?.password)
         if (!isAuth) {
             authLogger.error(`invalid password login attempt by user : ${req.body.mobile}`)
             return res.status(401).json({ error: 'invalid credentials' })
         }
 
-        const accessToken = await jwt.sign({ userId: user?._id }, process.env.ACCESS_TOKEN, { expiresIn: '15m' })
-        const refreshToken = await jwt.sign({ userId: user?._id }, process.env.REFRESH_TOKEN, { expiresIn: '7d' })
+        const accessToken = await jwt.sign({ userId: user?._id, status: user?.status }, process.env.ACCESS_TOKEN, { expiresIn: '15m' })
+        const refreshToken = await jwt.sign({ userId: user?._id, status: user?.status }, process.env.REFRESH_TOKEN, { expiresIn: '7d' })
 
         authLogger.info(`successfull login by user : ${req.body.mobile}`)
-        res.cookie('token', accessToken, { httpOnly: true, secure: true, maxAge: 900000 })
-        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, maxAge: 604800000 }).status(200).json({ message: 'login successfull' })
+        res.cookie('token', accessToken, { httpOnly: true, secure: true, maxAge: 900000, })
+        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, maxAge: 604800000 })
+            .status(200)
+            .json({
+                user: { name: user?.name, mobile: user?.mobile, username: user?.username, role: user?.role, status: user?.status },
+                isAuthenticated: user?.status === 'active'
+            })
 
     } catch (error) {
 
@@ -87,8 +97,48 @@ const loginUser = async (req, res) => {
     }
 }
 
+//account status check
+const userStatusCheck = async (req, res) => {
+    try {
+
+        authLogger.info(`authentication status check by user : ${req.user.userId}`)
+        const { name, mobile, username, role, status } = await User.findById(req.user.userId)
+
+        if (status !== 'active') {
+            authLogger.warn(`account access attempt by inactive user: ${mobile}`)
+            return res.status(401).json({ error: 'user inactive' })
+        }
+
+        authLogger.info(`authenticated status check success by user : ${mobile}`)
+        res.status(200).json({ user: { name, mobile, username, role, status }, isAuthenticated: status === 'active' })
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ error: `internal server error` })
+    }
+}
+
+//logout
+const logoutUser = async (req, res) => {
+    try {
+
+        authLogger.info(`logout request`)
+        res.clearCookie('refreshToken', { httpOnly: true, secure: true })
+        res.clearCookie('token', { httpOnly: true, secure: true })
+            .status(200)
+            .json({ message: 'successfully logged out' })
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ error: `internal server error` })
+
+    }
+}
+
 
 module.exports = {
     registerUser,
-    loginUser
+    loginUser,
+    userStatusCheck,
+    logoutUser
 }
