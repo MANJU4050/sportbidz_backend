@@ -7,13 +7,14 @@ const cookieParser = require('cookie-parser')
 
 const { dbLogger, requestLogger, serverLogger } = require("./utils/logger")
 const userRoutes = require("./routes/userRoutes")
+const tournamentRoutes = require('./routes/tournamentRoutes')
 
 const app = express()
 const server = createServer(app)
 
 app.use(cors({
     origin: 'http://localhost:5173',
-    methods:['GET','POST','PUT','PATCH','DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     credentials: true
 }))
 app.use(express.json())
@@ -31,6 +32,8 @@ app.get('/', async (req, res) => {
 
 
 app.use(`/api/${process.env.API_VERSION}/users`, userRoutes)
+app.use(`/api/${process.env.API_VERSION}/tournaments`, tournamentRoutes)
+
 
 app.use((err, req, res, next) => {
     serverLogger.error(err)

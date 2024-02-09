@@ -50,11 +50,25 @@ const serverLogger = createLogger({
     ],
   });
 
+  const tournamentLogger = createLogger({
+    level: "info",
+    format: combine(
+      label({ label: "Tournaments" }),
+      timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+      prettyPrint()
+    ),
+    transports: [
+      new transports.Console(),
+    ],
+  });
+
+
 
 
 module.exports = {
   requestLogger,
   dbLogger,
   serverLogger,
-  authLogger
+  authLogger,
+  tournamentLogger
 }
