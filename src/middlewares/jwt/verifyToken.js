@@ -3,7 +3,6 @@ const { authLogger } = require('../../utils/logger')
 
 const verifyToken = async (req, res, next) => {
     const token = req.cookies.token
-    console.log(req.cookies, "cookies")
 
     if (!token) {
         authLogger.error(`request made with no token`)
