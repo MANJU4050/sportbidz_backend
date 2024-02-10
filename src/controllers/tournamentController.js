@@ -101,8 +101,30 @@ const getAllTournaments = async (req, res) => {
 
 }
 
+const getTournamentDetails = async (req,res) => {
+    try {
+
+        const { tournamentId } = req.params
+
+        const tournament = await Tournament.findById(tournamentId)
+
+        if (!tournament) {
+            tournamentLogger.warn(`no tournament found`)
+            return res.status(404).json({ error: 'no tournament found' })
+        }
+
+        res.status(200).json(tournament)
+
+
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ error: "internal server error" })
+    }
+}
+
 module.exports = {
     registerTournament,
     getTournamentByUser,
-    getAllTournaments
+    getAllTournaments,
+    getTournamentDetails
 }
