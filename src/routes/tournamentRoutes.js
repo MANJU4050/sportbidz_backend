@@ -7,6 +7,7 @@ const verifyToken = require('../middlewares/jwt/verifyToken')
 route.post('/register',verifyToken,tournamentController.registerTournament)
 route.get('/getbyuser',verifyToken,tournamentController.getTournamentByUser)
 route.get('/getall',verifyToken,tournamentController.getAllTournaments)
+route.get('/tournamentdetails/:tournamentId',verifyToken,tournamentController.getTournamentDetails)
 
 
 module.exports = route
