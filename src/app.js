@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser')
 const { dbLogger, requestLogger, serverLogger } = require("./utils/logger")
 const userRoutes = require("./routes/userRoutes")
 const tournamentRoutes = require('./routes/tournamentRoutes')
+const playerRoutes = require('./routes/PlayerRoutes')
 
 const app = express()
 const server = createServer(app)
@@ -33,6 +34,7 @@ app.get('/', async (req, res) => {
 
 app.use(`/api/${process.env.API_VERSION}/users`, userRoutes)
 app.use(`/api/${process.env.API_VERSION}/tournaments`, tournamentRoutes)
+app.use(`/api/${process.env.API_VERSION}/players`, playerRoutes)
 
 
 app.use((err, req, res, next) => {
