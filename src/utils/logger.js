@@ -74,6 +74,18 @@ const serverLogger = createLogger({
     ],
   });
 
+  const managerLogger = createLogger({
+    level: "info",
+    format: combine(
+      label({ label: "Managers" }),
+      timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+      prettyPrint()
+    ),
+    transports: [
+      new transports.Console(),
+    ],
+  });
+
 
 
 
@@ -83,5 +95,6 @@ module.exports = {
   serverLogger,
   authLogger,
   tournamentLogger,
-  playerLogger
+  playerLogger,
+  managerLogger
 }
