@@ -48,7 +48,7 @@ const getPlayerByTournament = async (req, res) => {
 
         const { tournamentId } = req.params
 
-        const players = await Player.find({ tournamentId: tournamentId })
+        const players = await Player.find({ tournamentId: tournamentId }).select('-__v').exec()
 
         if (!players || players.length === 0) {
             playerLogger.warn(`no players registered for the tournament ${tournamentId}`)
