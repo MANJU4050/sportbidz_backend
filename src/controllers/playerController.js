@@ -19,6 +19,7 @@ const registerPlayerByTournament = async (req, res) => {
             playerType: req.body.playerType,
             dateOfBirth: req.body.dateOfBirth,
             address: req.body.address,
+            role:'player',
             state: req.body.state,
             district: req.body.district,
             pincode: req.body.pincode,
