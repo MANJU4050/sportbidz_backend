@@ -56,6 +56,7 @@ const getTournamentByUser = async (req, res) => {
             .sort({ createdAt: -1 })
             .limit(limit * 1)
             .skip((page - 1) * limit)
+            .select('-createdBy -__v')
             .exec()
 
         if (tournaments?.length === 0) {
@@ -87,6 +88,7 @@ const getAllTournaments = async (req, res) => {
             .sort({ createdAt: -1 })
             .limit(limit * 1)
             .skip((page - 1) * limit)
+            .select('-createdBy -__v')
             .exec()
 
         if (tournaments?.length === 0) {
@@ -106,7 +108,7 @@ const getTournamentDetails = async (req,res) => {
 
         const { tournamentId } = req.params
 
-        const tournament = await Tournament.findById(tournamentId)
+        const tournament = await Tournament.findById(tournamentId).select('-createdBy -__v').exec()
 
         if (!tournament) {
             tournamentLogger.warn(`no tournament found`)
