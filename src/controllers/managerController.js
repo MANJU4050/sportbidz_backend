@@ -12,8 +12,14 @@ const registerManager = async (req, res) => {
             managerLogger.error(`manager validation failed with error : ${error.details[0].message}`)
             res.status(401).json({ error: error.details[0].message })
         }
-
         const userId = req.user.userId
+
+        const isRegistered = await Manager.findOne({tournamentId:req.body.tournamentId,managerId:userId})
+
+        if(isRegistered !== null){
+            managerLogger.warn(`duplication registration request by : ${userId}`)
+           return res.status(401).json({error:"you are already registered"})
+        }
 
         const newManager = new Manager({
             managerId: userId,
