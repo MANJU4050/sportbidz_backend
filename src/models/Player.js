@@ -5,6 +5,7 @@ const playerSchema = mongoose.Schema({
     playerName: { type: String, required: true },
     mobile: { type: String, required: true },
     playerType: { type: String, required: true },
+    role:{type: String,required:true},
     dateOfBirth: { type: Date, },
     address: { type: String },
     state: { type: String },
