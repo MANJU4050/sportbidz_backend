@@ -56,7 +56,7 @@ const getTournamentByUser = async (req, res) => {
             .sort({ createdAt: -1 })
             .limit(limit * 1)
             .skip((page - 1) * limit)
-            .select('-createdBy -__v')
+            .select('-__v')
             .exec()
 
         if (tournaments?.length === 0) {
@@ -88,7 +88,7 @@ const getAllTournaments = async (req, res) => {
             .sort({ createdAt: -1 })
             .limit(limit * 1)
             .skip((page - 1) * limit)
-            .select('-createdBy -__v')
+            .select('-__v')
             .exec()
 
         if (tournaments?.length === 0) {
