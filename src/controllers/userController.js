@@ -85,7 +85,7 @@ const loginUser = async (req, res) => {
         res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, maxAge: 604800000 })
             .status(200)
             .json({
-                user: { name: user?.name, mobile: user?.mobile, username: user?.username, role: user?.role, status: user?.status },
+                user: { name: user?.name, mobile: user?.mobile, username: user?.username, role: user?.role, status: user?.status,_id:user?._id },
                 isAuthenticated: user?.status === 'active'
             })
 
@@ -102,7 +102,7 @@ const userStatusCheck = async (req, res) => {
     try {
 
         authLogger.info(`authentication status check by user : ${req.user.userId}`)
-        const { name, mobile, username, role, status } = await User.findById(req.user.userId)
+        const { name, mobile, username, role, status, _id } = await User.findById(req.user.userId)
 
         if (status !== 'active') {
             authLogger.warn(`account access attempt by inactive user: ${mobile}`)
@@ -110,7 +110,7 @@ const userStatusCheck = async (req, res) => {
         }
 
         authLogger.info(`authenticated status check success by user : ${mobile}`)
-        res.status(200).json({ user: { name, mobile, username, role, status }, isAuthenticated: status === 'active' })
+        res.status(200).json({ user: { name, mobile, username, role, status, _id }, isAuthenticated: status === 'active' })
 
     } catch (error) {
         console.log(error)
