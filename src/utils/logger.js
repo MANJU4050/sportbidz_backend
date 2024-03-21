@@ -86,6 +86,18 @@ const serverLogger = createLogger({
     ],
   });
 
+  const auctionLogger = createLogger({
+    level: "info",
+    format: combine(
+      label({ label: "Auctions" }),
+      timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+      prettyPrint()
+    ),
+    transports: [
+      new transports.Console(),
+    ],
+  });
+
 
 
 
@@ -96,5 +108,6 @@ module.exports = {
   authLogger,
   tournamentLogger,
   playerLogger,
-  managerLogger
+  managerLogger,
+  auctionLogger
 }

@@ -10,6 +10,7 @@ const userRoutes = require("./routes/userRoutes")
 const tournamentRoutes = require('./routes/tournamentRoutes')
 const playerRoutes = require('./routes/PlayerRoutes')
 const managerRoutes = require('./routes/managerRoutes')
+const auctionRoutes = require('./routes/auctionRoutes')
 
 const app = express()
 const server = createServer(app)
@@ -37,6 +38,8 @@ app.use(`/api/${process.env.API_VERSION}/users`, userRoutes)
 app.use(`/api/${process.env.API_VERSION}/tournaments`, tournamentRoutes)
 app.use(`/api/${process.env.API_VERSION}/players`, playerRoutes)
 app.use(`/api/${process.env.API_VERSION}/managers`,managerRoutes)
+app.use(`/api/${process.env.API_VERSION}/auctions`,auctionRoutes)
+
 
 
 app.use((err, req, res, next) => {
