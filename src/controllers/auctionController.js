@@ -1,7 +1,7 @@
 const Auction = require('../models/Auction')
 const Manager = require('../models/Manager')
 const { auctionRegisterSchema } = require('../validators/AuctionValidator')
-const {auctionLogger} = require('../utils/logger')
+const { auctionLogger } = require('../utils/logger')
 
 const auctionRegistration = async (req, res) => {
     try {
@@ -47,6 +47,28 @@ const auctionRegistration = async (req, res) => {
 }
 
 
+const getAuctionsByUser = async (req, res) => {
+    try {
+
+        const userId = req.user.userId
+
+        const auctions = await Auction.find({ $or: [{ adminId: userId }, { managers: { $elemMatch: { managerId: userId } } }] })
+        if (auctions.length === 0) {
+            auctionLogger.warn(`empty auction request by user: ${userId}`)
+            res.status(404).json({ error: "no auctions found for user" })
+            return
+        }
+
+        auctionLogger.info(`auctions fetched by user : ${userId}`)
+        res.status(200).json(auctions)
+
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ error: 'internal server error' })
+    }
+}
+
 module.exports = {
     auctionRegistration,
+    getAuctionsByUser
 }
