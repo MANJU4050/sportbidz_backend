@@ -68,7 +68,33 @@ const getAuctionsByUser = async (req, res) => {
     }
 }
 
+const getAuctionById = async (req, res) => {
+    try {
+        const userId = req.user.userId
+        const { auctionId } = req.params
+
+        const auction = await Auction.findById(auctionId);
+
+        if (!auction) {
+            res.status(404).json({ error: "no auction found" })
+        }
+
+        let isAdmin = false
+        if (userId === auction.adminId) {
+            isAdmin = true
+        }
+
+        res.status(200).json({ auction: auction, isAdmin: isAdmin })
+
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ error: 'internal server error' })
+    }
+}
+
+
 module.exports = {
     auctionRegistration,
-    getAuctionsByUser
+    getAuctionsByUser,
+    getAuctionById
 }
