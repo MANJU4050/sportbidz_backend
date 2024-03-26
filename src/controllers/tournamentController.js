@@ -73,6 +73,8 @@ const getTournamentByUser = async (req, res) => {
 
 const getAllTournaments = async (req, res) => {
     try {
+
+        console.log('some one trying to connect')
         const { page, limit, search } = req.query;
 
         let queryConditions

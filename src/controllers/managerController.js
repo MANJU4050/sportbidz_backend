@@ -10,7 +10,7 @@ const registerManager = async (req, res) => {
         const { error } = managerRegistrationSchema.validate(req.body)
         if (error) {
             managerLogger.error(`manager validation failed with error : ${error.details[0].message}`)
-            res.status(401).json({ error: error.details[0].message })
+          return  res.status(401).json({ error: error.details[0].message })
         }
         const userId = req.user.userId
 
@@ -29,6 +29,9 @@ const registerManager = async (req, res) => {
             teamName: req.body.teamName,
             role: 'manager',
             dateOfBirth: req.body.dateOfBirth,
+            pointsUsed:0,
+            remainingPoints:0,
+            
             icon: {
                 iconName: req.body.iconName,
                 iconMobile: req.body.iconMobile,

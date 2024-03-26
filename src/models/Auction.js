@@ -11,14 +11,19 @@ const AuctionSchema = mongoose.Schema({
     totalTeamPoints: Number,
     currentHikePoints: Number,
     auctionStatus:String,
+    currentPlayerNumber:{type: Number,default:0},
     currentBiddingPlayer: {},
+    currentPlayerStatus:{type: String, default:'new'},
+    currentPlayerBids:[],
     currentHighestBid: {
+        _id:{type: String},
         bid: { type: Number, default: 0 },
         bidder: {}
     },
     players: [],
     managers: [],
     unSoldPlayers: [],
+    soldPlayers:[],
     auctionDetails:[]
 }, { timestamps: true })
 
