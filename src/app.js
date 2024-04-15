@@ -19,6 +19,7 @@ const verifyTokenSocket = require('./middlewares/jwt/verifyTokenSocket')
 const Player = require('./models/Player')
 const Auction = require('./models/Auction')
 const Manager = require('./models/Manager')
+const { findById } = require("./models/User")
 
 const app = express()
 const server = createServer(app)
@@ -179,8 +180,6 @@ auctionSpace.on('connection', async (socket) => {
             const pointsLeft = auction[0]?.manager?.pointsRemaining - bid
             const pointsRequired = (auction[0]?.manager?.playersRequired - 1) * auction[0]?.basePlayerPoints
 
-            console.log(pointsLeft, "pointsleft")
-            console.log(pointsRequired, "pointsRequired")
 
             if (pointsLeft < pointsRequired) {
 
@@ -222,6 +221,8 @@ auctionSpace.on('connection', async (socket) => {
                 }
             ])
 
+            let auctionStatus = (auction[0]?.playersPerTeam * auction[0]?.numberOfTeams) === auction[0]?.soldPlayers.length + 1
+
 
             const pointsUsed = auction[0]?.currentHighestBid.bid
             const totalPointsUsed = auction[0]?.manager?.pointsUsed + pointsUsed
@@ -235,7 +236,6 @@ auctionSpace.on('connection', async (socket) => {
                 maxBiddablePoints = (auction[0]?.manager?.pointsRemaining - auction[0]?.currentHighestBid?.bid) - ((auction[0]?.manager?.playersRequired - 2) * auction[0]?.basePlayerPoints)
 
             }
-            console.log(maxBiddablePoints, "max biddable")
 
             const auctionDetails = {
                 _id: uuidv4(),
@@ -252,8 +252,13 @@ auctionSpace.on('connection', async (socket) => {
 
 
             const socketId = customIdToSocketIdMap[auction[0]?.currentHighestBid?.bidder?.managerId]
+
+
             io.of('/auctions').emit('sold', auctionDetails, updatedBid?.managers)
             io.of('/auctions').to(socketId).emit('points', points, maxBiddablePoints)
+            if (auctionStatus) {
+                io.of('/auctions').emit('complete')
+            }
         })
 
         socket.on('unsold', async (auctionId) => {
@@ -308,7 +313,6 @@ auctionSpace.on('connection', async (socket) => {
             const attemptedPlayerIds = new Set(); // Store attempted player IDs to avoid repeats
             let attempts = 0;
 
-            console.log(attemptedPlayerIds, "attempted")
 
             while (attempts < auctionPlayers.length) {
                 const randomNumber = Math.floor(Math.random() * auctionPlayers.length);
@@ -347,6 +351,21 @@ auctionSpace.on('connection', async (socket) => {
                 io.of('/auctions').to(socket.id).emit('message', 'no available players found')
             }
         });
+
+        socket.on('finish', async (auctionId) => {
+            const auction = await Auction.findById(auctionId)
+
+            const unSoldedPlayers = auction?.players?.filter((player) => {
+                // Check if this unsold player is not found in the soldPlayers array
+                return !auction?.soldPlayers?.some((soldPlayer) => {
+                    return player?._id.toString() === soldPlayer?._id.toString()
+                });
+            });
+
+            const auctionUpdate = await Auction.updateOne({ _id: auctionId }, { $set: { unSoldPlayers: unSoldedPlayers } })
+
+            io.of('/auctions').emit('finished')
+        })
 
 
     } catch (error) {

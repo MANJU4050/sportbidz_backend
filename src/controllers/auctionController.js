@@ -14,7 +14,7 @@ const auctionRegistration = async (req, res) => {
 
         if (error) {
             auctionLogger.warn(`auction validation failed by : ${userId}`)
-           return res.status(401).json({ error: error.details[0].message })
+            return res.status(401).json({ error: error.details[0].message })
         }
 
 
@@ -83,7 +83,7 @@ const getAuctionById = async (req, res) => {
             return manager?.managerId === userId
         })
 
-        console.log(manager,"manager")
+        console.log(manager, "manager")
 
 
         if (!auction) {
@@ -117,10 +117,30 @@ const deleteAuctionById = async (req, res) => {
     }
 }
 
+const auctionByIdOpen = async (req, res) => {
+    try {
+
+        const { auctionId } = req.params
+
+        const auction = await Auction.findById(auctionId)
+
+        if (!auction) {
+            return res.status(404).json({ error: "no auction found" })
+        }
+
+        res.status(200).json(auction)
+
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ error: 'internal server error' })
+    }
+}
+
 
 module.exports = {
     auctionRegistration,
     getAuctionsByUser,
     getAuctionById,
-    deleteAuctionById
+    deleteAuctionById,
+    auctionByIdOpen
 }

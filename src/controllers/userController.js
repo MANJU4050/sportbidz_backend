@@ -77,11 +77,11 @@ const loginUser = async (req, res) => {
             return res.status(401).json({ error: 'invalid credentials' })
         }
 
-        const accessToken = await jwt.sign({ userId: user?._id, status: user?.status }, process.env.ACCESS_TOKEN, { expiresIn: '15m' })
+        const accessToken = await jwt.sign({ userId: user?._id, status: user?.status }, process.env.ACCESS_TOKEN, { expiresIn: '1500m' })
         const refreshToken = await jwt.sign({ userId: user?._id, status: user?.status }, process.env.REFRESH_TOKEN, { expiresIn: '7d' })
 
         authLogger.info(`successfull login by user : ${req.body.mobile}`)
-        res.cookie('token', accessToken, { httpOnly: true, secure: true, maxAge: 900000, })
+        res.cookie('token', accessToken, { httpOnly: true, secure: true, maxAge: 90000000, })
         res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, maxAge: 604800000 })
             .status(200)
             .json({
